@@ -12,6 +12,8 @@ Example is shown in ```net.py```, which shows the inference of a LeNet CNN. Weig
 The training on pytorch is regular, which can be seen in ```train/``` folder. The weights of CNN are exported to ```.mat``` file.
 
 
+#### Plugins for ImagePy
+The plugin is in ```plgs/``` folder
 
 #### References
 

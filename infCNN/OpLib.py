@@ -82,3 +82,8 @@ class MaxPool(Op):
         return self._pool_forward(x, self.maxpool, self.size, self.stride)
 
 
+relu = ReLU()
+flatten = Flatten()
+sigmoid = Sigmoid()
+softmax = Softmax()
+maxpool = MaxPool()
