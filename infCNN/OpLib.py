@@ -1,6 +1,6 @@
 from .Core import Op 
-from .im2col import im2col_indices
 import numpy as np
+from .im2col import im2col_indices 
 
     
 class ReLU(Op):

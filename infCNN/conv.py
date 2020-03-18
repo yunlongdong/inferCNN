@@ -34,7 +34,8 @@ def img2col(img, core, buf=[np.zeros(1, dtype=np.int32)]):
     
     # mark where need
     iimg = img.view(dtype=np.int32)
-    iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
+    # iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
+    iimg &= 0xfffffffe
     iimg[:,0,:,:] |= 1
     
     # ravel the image
@@ -60,7 +61,8 @@ if __name__ == '__main__':
     img.ravel()[:] = np.arange(3*512*512)
 
     iimg = img.view(dtype=np.int32)
-    iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
+    # iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
+    iimg &= 0xfffffffe
     iimg[:,0,:,:] |= 1
     
     core = np.zeros((32, 3, 3, 3), dtype=np.float32)

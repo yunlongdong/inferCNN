@@ -52,9 +52,12 @@ class LeNet():
 
 if __name__ == "__main__":
     net = LeNet()
-    data =  np.ones((1, 1, 28, 28))
-    net.load_mat('train/lenet.mat')
+    data =  np.ones((1, 1, 28, 28), dtype='float32')
+    x = np.ascontiguousarray(data, dtype=np.float32)
+    print(data.shape, data.dtype)
+    # net.load_mat('train/lenet.mat')
+    print(net(x))
     start = time()
-    print(net(data))
+    print(net(x))
     print('infCNN LeNet time:', time()-start)
 

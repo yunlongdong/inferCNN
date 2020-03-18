@@ -19,8 +19,8 @@ class Dense(Layer):
         return y.T + self.bias.reshape((1, -1))
 
     def load_from_torch(self, weights, bias):
-        self.K = weights
-        self.bias = bias
+        self.K = weights.copy()
+        self.bias = bias.copy()
     
 
 class Conv2d(Layer):
@@ -45,11 +45,13 @@ class Conv2d(Layer):
 
     def forward(self, X):
         out = img2col(X, self.K)
-        print(out.shape)
+        out = out.transpose(0, 2, 3, 1)
+        out = out + self.bias
+        return out.transpose(0, 3, 1, 2)
         
     def load_from_torch(self, weights, bias):
-        self.K = weights
-        self.bias = bias
+        self.K = weights.copy()
+        self.bias = bias.copy()
 
 
 
