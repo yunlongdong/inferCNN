@@ -18,6 +18,14 @@ def up4x(fm):
     fm4x = up2x(up2x(fm))
     return fm4x
 
+def up8x(fm):
+    fm8x = up4x(up2x(fm))
+    return fm8x
+
+def up16x(fm):
+    fm16x = up8x(up2x(fm))
+    return fm16x
+
 if __name__ == "__main__":
     img = np.random.randn(2, 3, 100, 100)
     img2x = up4x(img)
