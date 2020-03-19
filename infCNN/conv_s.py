@@ -22,10 +22,11 @@ def fill_col(pdimg, idx, colimg):
             s += 1
     return colimg
 
-def conv(img, core, stride=(1,1), buf=[np.zeros(1, dtype=np.int32)]):
+def img2col(img, core, stride=(1,1), buf=[np.zeros(1, dtype=np.int32)]):
     # new the col_img, if needed
     strh, strw = stride
     cimg_w = np.cumprod(core.shape[1:])[-1]
+    print(img.shape)
     n,c,h,w = img.shape
     cimg_h = n*(h//strh)*(w//strw)
     
@@ -37,6 +38,7 @@ def conv(img, core, stride=(1,1), buf=[np.zeros(1, dtype=np.int32)]):
     
     # mark where need
     iimg = img.view(dtype=np.int32)
+    #iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
     iimg &= 0xfffffffe
     iimg[:,0,::strh,::strw] |= 1
     
@@ -60,15 +62,19 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from scipy.ndimage import convolve
     img = np.zeros((1, 3, 512, 512), dtype=np.float32)
-    #img.ravel()[:] = np.arange(3*512*512)
+    img.ravel()[:] = np.arange(3*512*512)
+
+    iimg = img.view(dtype=np.int32)
+    iimg.view(dtype=np.uint8).ravel()[::4]&=0xfe
+    iimg[:,0,:,:] |= 1
+    
     core = np.zeros((32, 3, 3, 3), dtype=np.float32)
-    #core.ravel()[:] = np.arange(3*3*3*32)
-
-    rst1 = conv(img, core, (1,1))
+    core.ravel()[:] = np.arange(3*3*3*32)
+    
     start = time()
-    rst1 = conv(img, core, (1,1))
-    print('jit cost:', time()-start)
+    rst1 = img2col(img, core, (1,1))
+    print(time()-start)
 
     start = time()
-    rst2 = conv(img, core, (1,1))
-    print('jit cost:', time()-start)
+    rst2 = img2col(img, core, (2,2))
+    print('jit cost: x10', time()-start)

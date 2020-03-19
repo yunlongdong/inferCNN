@@ -1,22 +1,20 @@
 from .Core import Layer
-from .conv import img2col
+from .conv import conv
 import numpy as np
 
 class Dense(Layer):
 
     def __init__(self, n_in, n_out):
         super().__init__('dense_{}_{}'.format(n_in, n_out))
-        self.n_in = n_in
-        self.n_out = n_out
-        self.K =  np.zeros((n_out, n_in), dtype='float32')
-        self.bias = np.zeros(n_out, dtype='float32')
+        self.n_in, self.n_out = n_in, n_out
+        self.K =  np.zeros((n_out, n_in), dtype=np.float32)
+        self.bias = np.zeros(n_out, dtype=np.float32)
 
     def forward(self, x):
         self.x = x
-        w = self.K
-        # the dense layer math: y = x*w
-        y = w.dot(x.T)
-        return y.T + self.bias.reshape((1, -1))
+        y = x.dot(self.K.T)
+        y += self.bias.reshape((1,-1))
+        return y
 
     def load_from_torch(self, weights, bias):
         self.K = weights.copy()
@@ -39,15 +37,10 @@ class Conv2d(Layer):
         self.K = np.zeros((C_out, C_in, K_s, K_s), dtype='float32')
         self.bias = np.zeros(C_out, dtype='float32')
 
-    # def forward(self, X):
-    #     out = conv_forward(X, self.K, self.bias, stride=self.stride, padding=self.pad_size)
-    #     return out
-
     def forward(self, X):
-        out = img2col(X, self.K)
-        out = out.transpose(0, 2, 3, 1)
-        out = out + self.bias
-        return out.transpose(0, 3, 1, 2)
+        out = conv(X, self.K)
+        out += self.bias.reshape((1,-1,1,1))
+        return out
         
     def load_from_torch(self, weights, bias):
         self.K = weights.copy()

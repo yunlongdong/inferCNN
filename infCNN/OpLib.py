@@ -1,6 +1,7 @@
 from .Core import Op 
 import numpy as np
 from .im2col import im2col_indices 
+from .maxpool import maxpool
 
     
 class ReLU(Op):
@@ -86,4 +87,4 @@ relu = ReLU()
 flatten = Flatten()
 sigmoid = Sigmoid()
 softmax = Softmax()
-maxpool = MaxPool()
+maxpool = maxpool 
