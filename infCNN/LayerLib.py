@@ -1,5 +1,5 @@
 from .Core import Layer
-from .conv_s import conv
+from .conv import conv
 import numpy as np
 
 

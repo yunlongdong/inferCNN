@@ -13,7 +13,7 @@ The training on pytorch is regular, which can be seen in ```train/``` folder. Th
 
 
 #### Plugins for ImagePy
-The plugin is in ```plgs/``` folder
+The plugin example for mnist is in ```plgs/``` folder
 
 #### References
 

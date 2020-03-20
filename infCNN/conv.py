@@ -1,6 +1,9 @@
 import numpy as np
 from time import time
-from numba import njit
+try: from numba import njit
+except: njit = None
+
+if njit is None: print('install numba can double speed!')
 
 def neighbors(shape, core):
     shp = [slice(0,i) for i in core]
@@ -12,8 +15,7 @@ def neighbors(shape, core):
     acc = np.cumprod((1,)+shape[::-1][:-1])
     return np.dot(idx.T, acc[::-1])
 
-@njit
-def fill_col(pdimg, idx, colimg):
+def jit_fill_col(pdimg, idx, colimg):
     s = 0
     for i in range(len(pdimg)):
         if pdimg[i]&1==0: continue
@@ -22,19 +24,25 @@ def fill_col(pdimg, idx, colimg):
             s += 1
     return colimg
 
+def fill_col(pdimg, idx, colimg):
+    rc = np.where(pdimg&1)[0]
+    rc = rc.reshape((-1,1))+idx
+    colimg[:] = pdimg[rc.ravel()]
+    return colimg
+
+if not njit is None: fill_col = njit(jit_fill_col)
+
 def conv(img, core, stride=(1,1), buf=[np.zeros(1, dtype=np.int32)]):
     # new the col_img, if needed
     strh, strw = stride
     cimg_w = np.cumprod(core.shape[1:])[-1]
     n,c,h,w = img.shape
     cimg_h = n*(h//strh)*(w//strw)
-    
     if len(buf[0])<cimg_h*cimg_w:
         buf[0] = col_img = np.zeros(cimg_h*cimg_w, dtype=np.int32)
     else:
         col_img = buf[0][:cimg_h*cimg_w]
         col_img[:] = 0
-    
     # mark where need
     iimg = img.view(dtype=np.int32)
     iimg &= 0xfffffffe
@@ -71,4 +79,4 @@ if __name__ == '__main__':
 
     start = time()
     rst2 = conv(img, core, (1,1))
-    print('jit cost:', time()-start)
+    print('numpy cost:', time()-start)

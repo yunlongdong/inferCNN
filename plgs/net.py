@@ -3,14 +3,8 @@ from scipy.io import loadmat
 # infCNN layer
 from infCNN import Conv2d, Dense
 # infCNN op 
-from infCNN import ReLU, Flatten, MaxPool, Softmax 
+from infCNN import relu, flatten, maxpool, softmax 
 from time import time
-
-# op
-relu = ReLU()
-flatten = Flatten()
-maxpool = MaxPool()
-softmax = Softmax()
 
 class LeNet():
     def __init__(self):
