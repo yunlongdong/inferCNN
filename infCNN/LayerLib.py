@@ -1,28 +1,29 @@
 from .Core import Layer
-from .conv import conv
+from .conv_s import conv
 import numpy as np
+
 
 class Dense(Layer):
 
     def __init__(self, n_in, n_out):
         super().__init__('dense_{}_{}'.format(n_in, n_out))
         self.n_in, self.n_out = n_in, n_out
-        self.K =  np.zeros((n_out, n_in), dtype=np.float32)
+        self.K = np.zeros((n_out, n_in), dtype=np.float32)
         self.bias = np.zeros(n_out, dtype=np.float32)
 
     def forward(self, x):
         self.x = x
         y = x.dot(self.K.T)
-        y += self.bias.reshape((1,-1))
+        y += self.bias.reshape((1, -1))
         return y
 
     def load_from_torch(self, weights, bias):
         self.K = weights.copy()
         self.bias = bias.copy()
-    
+
 
 class Conv2d(Layer):
-    
+
     def __init__(self, C_in, C_out, K_s, Stride):
         """
         Params:
@@ -33,26 +34,23 @@ class Conv2d(Layer):
         self.c_out = C_out
         self.k_s = K_s
         self.stride = Stride
-        self.pad_size = int((K_s -1)/2)
+        self.pad_size = int((K_s - 1)/2)
         self.K = np.zeros((C_out, C_in, K_s, K_s), dtype='float32')
         self.bias = np.zeros(C_out, dtype='float32')
 
     def forward(self, X):
-        out = conv(X, self.K)
-        out += self.bias.reshape((1,-1,1,1))
+        out = conv(X, self.K, (self.stride, self.stride))
+        out += self.bias.reshape((1, -1, 1, 1))
         return out
-        
+
     def load_from_torch(self, weights, bias):
         self.K = weights.copy()
         self.bias = bias.copy()
 
 
-
-
 if __name__ == "__main__":
     # data = np.arange(16).reshape((1, 1, 4, 4))
     data = np.random.randn(2, 3, 200, 200)
-
 
     import torch.nn as nn
     import torch
@@ -68,7 +66,7 @@ if __name__ == "__main__":
     start = time()
     out_torch = conv_torch(torch.FloatTensor(data)).detach().numpy()
     print('torch time:', time() - start)
-    
+
     conv.load_from_torch(w, b)
     start = time()
     out = conv(data)
@@ -77,7 +75,6 @@ if __name__ == "__main__":
     print('torch:', out_torch.shape)
     print('acw:', out.shape)
     print(np.sum(out-out_torch))
-
 
     data = np.random.randn(2, 10)
 
